@@ -83,8 +83,6 @@ public class RTPEffect_Sounds {
                 return true;
             } catch (IllegalArgumentException ignoredLegacy) {
                 return false;
-            } catch (ReflectiveOperationException ignoredReflection) {
-                return false;
             }
         } catch (ReflectiveOperationException e) {
             return false;
