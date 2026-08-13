@@ -21,7 +21,7 @@ public class Join {
         Player p = e.getPlayer();
         updater(p);
         AsyncHandler.async(() -> getPl().getCooldowns().loadPlayer(p));
-        rtpOnFirstJoin(p);
+        // Folia: PlayerJoinEvent can fire before the player is fully attached to its region.\n        // Run first-join RTP on the player entity scheduler on the next tick.\n        AsyncHandler.syncAtEntity(p, () -> rtpOnFirstJoin(p));
     }
 
     //Updater

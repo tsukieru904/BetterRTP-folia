@@ -10,6 +10,8 @@ import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 
+import java.lang.reflect.Method;
+
 public class RTPEffect_Sounds {
 
     private boolean enabled;
@@ -55,16 +57,36 @@ public class RTPEffect_Sounds {
                 BetterRTP.getInstance().getLogger().severe("ProtocolLib Sounds is enabled in the effects.yml file, but no ProtocolLib plugin was found!");
                 p.playSound(p.getLocation(), getSound(sound), 1F, 1F);
             }
-        } else
-            p.playSound(p.getLocation(), getSound(sound), 1F, 1F);
+        } else {
+            if (!playConfiguredSound(p, sound))
+                BetterRTP.getInstance().getLogger().warning(
+                        "The sound '" + sound + "' is unavailable on this server.");
+        }
     }
 
-    private Sound getSound(String sound) {
+    private boolean playConfiguredSound(Player p, String sound) {
+        if (sound == null || sound.trim().isEmpty())
+            return false;
+
         try {
-            return Sound.valueOf(sound.toUpperCase());
-        } catch (IllegalArgumentException e) {
-            BetterRTP.getInstance().getLogger().info("The sound '" + sound + "' is invalid!");
-            return null;
+            // Use the resource-key String overload on modern versions. This avoids
+            // hard dependency on a Sound enum constant that changed in 1.21+.
+            Method method = Player.class.getMethod(
+                    "playSound", Location.class, String.class, float.class, float.class);
+            method.invoke(p, p.getLocation(), sound, 1F, 1F);
+            return true;
+        } catch (NoSuchMethodException ignored) {
+            try {
+                Sound legacySound = Sound.valueOf(sound.toUpperCase());
+                p.playSound(p.getLocation(), legacySound, 1F, 1F);
+                return true;
+            } catch (IllegalArgumentException ignoredLegacy) {
+                return false;
+            } catch (ReflectiveOperationException ignoredReflection) {
+                return false;
+            }
+        } catch (ReflectiveOperationException e) {
+            return false;
         }
     }
 }
