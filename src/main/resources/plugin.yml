@@ -2,7 +2,8 @@ main: me.SuperRonanCraft.BetterRTP.BetterRTP
 version: ${project.version}
 name: BetterRTP
 author: SuperRonanCraft
-folia-supported: true #As of 3.6.8 thanks to LOOHP#6007, TechnicallyCoded#9095 and loving11ish#2066
+folia-supported: true #Folia supported: 1.21, 26.1, 26.2
+# Supported server versions: 1.8-1.21, 26.1, 26.2
 softdepend:
     - Vault
     - WorldGuard #Respect WorldGuard areas (https://dev.bukkit.org/projects/worldguard)
