@@ -87,6 +87,10 @@ public class QueueGenerator {
                 if (map == null) continue;
                 for (Map.Entry<String, RTPWorld> rtpWorldEntry : map.entrySet()) {
                     RTPWorld world = rtpWorldEntry.getValue();
+                    // Avoid forcing generation in empty worlds (especially VoidGen/Multiverse worlds)
+                    // during startup. Queue generation is triggered again when RTP is requested.
+                    if (world.getWorld() == null || world.getWorld().getPlayers().isEmpty())
+                        continue;
                     String type = getId(setup, rtpWorldEntry.getKey());
                     List<QueueData> applicable = QueueHandler.getApplicableAsync(world);
                     int newCount = data.lastType.equalsIgnoreCase(type) ? data.lastCount : applicable.size();
@@ -159,7 +163,7 @@ public class QueueGenerator {
             AsyncHandler.sync(() -> {
                 //BetterRTP.debug("Queued up a new position, attempts " + reQueueData.attempts);
                 PaperLib.getChunkAtAsync(loc)
-                        .thenAccept(v -> {
+                        .thenAccept(v -> AsyncHandler.syncAtLocation(loc, () -> {
                             Location safeLoc = RandomLocation.getSafeLocation(
                                     HelperRTP.getWorldType(rtpWorld.getWorld()),
                                     loc.getWorld(),
@@ -186,7 +190,7 @@ public class QueueGenerator {
                                 });
                             } else
                                 queueGenerator(reQueueData);
-                        });
+                        }));
             });
         } else {
             BetterRTP.debug("Queue position wasn't able to generate a location!");
