@@ -30,6 +30,11 @@ public class DepPlaceholderAPI extends PlaceholderExpansion {
         return BetterRTP.getInstance().getDescription().getAuthors().get(0);
     }
 
+    @Override
+    public boolean persist() {
+        return true;
+    }
+
     @NotNull
     @Override
     public String getVersion() {

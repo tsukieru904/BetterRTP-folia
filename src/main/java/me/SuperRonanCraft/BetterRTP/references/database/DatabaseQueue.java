@@ -66,12 +66,17 @@ public class DatabaseQueue extends SQLite {
                 ResultSet rs = null;
                 try {
                     conn = getSQLConnection();
-                    ps = conn.prepareStatement("SELECT * FROM " + tables.get(0) + " WHERE "
-                            + COLUMNS.WORLD.name + " = '" + range.getWorld().getName() + "' AND "
-                            + COLUMNS.X.name + " BETWEEN " + range.getXLow() + " AND " + range.getXHigh()
-                            + " AND " + COLUMNS.Z.name + " BETWEEN " + range.getZLow() + " AND " + range.getZHigh()
+                    ps = conn.prepareStatement("SELECT * FROM " + quoteIdentifier(tables.get(0)) + " WHERE "
+                            + quoteIdentifier(COLUMNS.WORLD.name) + " = ? AND "
+                            + quoteIdentifier(COLUMNS.X.name) + " BETWEEN ? AND ?"
+                            + " AND " + quoteIdentifier(COLUMNS.Z.name) + " BETWEEN ? AND ?"
                             + " ORDER BY RANDOM() LIMIT " + (QueueGenerator.queueMax + 1)
                     );
+                    ps.setString(1, range.getWorld().getName());
+                    ps.setInt(2, range.getXLow());
+                    ps.setInt(3, range.getXHigh());
+                    ps.setInt(4, range.getZLow());
+                    ps.setInt(5, range.getZHigh());
                     rs = ps.executeQuery();
                     while (rs.next()) {
                         long x = rs.getLong(COLUMNS.X.name);
@@ -100,7 +105,7 @@ public class DatabaseQueue extends SQLite {
     public QueueData addQueue(Location loc) {
         try {
             return SQLiteExecutor.EXECUTOR.submit(() -> {
-                String sql = "INSERT INTO " + tables.get(0) + " ("
+                String sql = "INSERT INTO " + quoteIdentifier(tables.get(0)) + " ("
                         + COLUMNS.X.name + ", "
                         + COLUMNS.Z.name + ", "
                         + COLUMNS.WORLD.name + ", "
@@ -149,7 +154,7 @@ public class DatabaseQueue extends SQLite {
     public boolean removeLocation(Location loc) {
         try {
             return SQLiteExecutor.EXECUTOR.submit(() -> {
-                String sql = "DELETE FROM " + tables.get(0) + " WHERE "
+                String sql = "DELETE FROM " + quoteIdentifier(tables.get(0)) + " WHERE "
                         + COLUMNS.X.name + " = ? AND "
                         + COLUMNS.Z.name + " = ? AND "
                         + COLUMNS.WORLD.name + " = ?";

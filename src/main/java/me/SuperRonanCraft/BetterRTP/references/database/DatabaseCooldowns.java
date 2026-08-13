@@ -106,7 +106,7 @@ public class DatabaseCooldowns extends SQLite {
     //Set a player Cooldown
     public void setCooldown(World world, CooldownData data) {
         String pre = "INSERT OR REPLACE INTO ";
-        String sql = pre + world.getName() + " ("
+        String sql = pre + quoteIdentifier(world.getName()) + " ("
                 + COLUMNS.UUID.name + ", "
                 + COLUMNS.COOLDOWN_DATE.name + " "
                 //+ COLUMNS.USES.name + " "

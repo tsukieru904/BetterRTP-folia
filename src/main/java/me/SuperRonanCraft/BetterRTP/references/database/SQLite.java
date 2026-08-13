@@ -17,7 +17,7 @@ public abstract class SQLite {
     List<String> tables;
     private boolean loaded;
 
-    public String addMissingColumns = "ALTER TABLE %table% ADD COLUMN %column% %type%";
+    public String addMissingColumns = "ALTER TABLE %table% ADD COLUMN `%column%` %type%";
 
     private final DATABASE_TYPE type;
 
@@ -76,7 +76,7 @@ public abstract class SQLite {
                             String _name = getColumnName(type, c);
                             String _type = getColumnType(type, c);
                             //System.out.println("Adding " + _name);
-                            s.executeUpdate(addMissingColumns.replace("%table%", table).replace("%column%", _name).replace("%type%", _type));
+                            s.executeUpdate(addMissingColumns.replace("%table%", quoteIdentifier(table)).replace("%column%", _name).replace("%type%", _type));
                         } catch (SQLException e) {
                             //e.printStackTrace();
                         }
@@ -211,7 +211,7 @@ public abstract class SQLite {
         ResultSet rs = null;
         try {
             conn = getSQLConnection();
-            ps = conn.prepareStatement("SELECT * FROM " + tables.get(0) + " WHERE " + getColumnName(type, getColumns(type)[0]) + " = 0");
+            ps = conn.prepareStatement("SELECT * FROM " + quoteIdentifier(tables.get(0)) + " WHERE " + quoteIdentifier(getColumnName(type, getColumns(type)[0])) + " = 0");
 
             rs = ps.executeQuery();
         } catch (SQLException ex) {
@@ -229,6 +229,11 @@ public abstract class SQLite {
         } catch (SQLException ex) {
             Error.close(BetterRTP.getInstance(), ex);
         }
+    }
+
+    protected String quoteIdentifier(String identifier) {
+        if (identifier == null) return "``";
+        return "`" + identifier.replace("`", "``") + "`";
     }
 
     public boolean isLoaded() {

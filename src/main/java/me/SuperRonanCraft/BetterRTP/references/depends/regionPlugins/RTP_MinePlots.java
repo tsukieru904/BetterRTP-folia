@@ -1,12 +1,10 @@
 package me.SuperRonanCraft.BetterRTP.references.depends.regionPlugins;
 
+import me.SuperRonanCraft.BetterRTP.BetterRTP;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.plugin.RegisteredServiceProvider;
 import pl.minecodes.plots.api.plot.PlotApi;
 import pl.minecodes.plots.api.plot.PlotServiceApi;
-
-import java.util.Objects;
 
 public class RTP_MinePlots implements RegionPluginCheck{
     // NOT TESTED (3.6.6)
@@ -19,18 +17,16 @@ public class RTP_MinePlots implements RegionPluginCheck{
         boolean result = true;
         if (REGIONPLUGINS.MINEPLOTS.isEnabled())
             try {
-                RegisteredServiceProvider<PlotServiceApi> serviceProvider = Bukkit.getServicesManager().getRegistration(PlotServiceApi.class);
-                Objects.requireNonNull(serviceProvider, "[MinePlots Respect] Service provider is null.");
-                plotServiceApi = serviceProvider.getProvider();
+                plotServiceApi = Bukkit.getServicesManager().load(PlotServiceApi.class);
+                if (plotServiceApi == null)
+                    return true;
 
-                plotServiceApi = serviceProvider.getProvider();
                 PlotApi plot = plotServiceApi.getPlot(loc);
-
-                if (plot != null) {
-                    result = false;
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
+                result = plot == null;
+            } catch (Throwable e) {
+                // Third-party protection hooks must not make RTP itself fail.
+                BetterRTP.getInstance().getLogger().warning(
+                        "[MinePlots Respect] Unable to check plot: " + e.getMessage());
             }
         return result;
     }

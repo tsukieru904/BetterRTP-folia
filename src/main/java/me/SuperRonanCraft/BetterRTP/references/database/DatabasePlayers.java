@@ -52,7 +52,7 @@ public class DatabasePlayers extends SQLite {
                 ResultSet rs = null;
                 try {
                     conn = getSQLConnection();
-                    ps = conn.prepareStatement("SELECT * FROM " + tables.get(0) + " WHERE " + COLUMNS.UUID.name + " = ?");
+                    ps = conn.prepareStatement("SELECT * FROM " + quoteIdentifier(tables.get(0)) + " WHERE " + COLUMNS.UUID.name + " = ?");
                     ps.setString(1, data.player.getUniqueId().toString());
 
                     rs = ps.executeQuery();
@@ -78,7 +78,7 @@ public class DatabasePlayers extends SQLite {
     public void setData(PlayerData data) {
         try {
             SQLiteExecutor.EXECUTOR.submit(() -> {
-                String sql = "INSERT OR REPLACE INTO " + tables.get(0) + " ("
+                String sql = "INSERT OR REPLACE INTO " + quoteIdentifier(tables.get(0)) + " ("
                     + COLUMNS.UUID.name + ", "
                     + COLUMNS.COUNT.name + ", "
                     + COLUMNS.LAST_COOLDOWN_DATE.name + ") VALUES(?, ?, ?)";
