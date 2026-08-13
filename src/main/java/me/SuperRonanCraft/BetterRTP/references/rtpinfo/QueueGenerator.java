@@ -160,7 +160,7 @@ public class QueueGenerator {
     private void addQueue(RTPWorld rtpWorld, String id, ReQueueData reQueueData) {
         Location loc = RandomLocation.generateLocation(rtpWorld);
         if (loc != null) {
-            AsyncHandler.sync(() -> {
+            AsyncHandler.syncAtLocation(loc, () -> {
                 //BetterRTP.debug("Queued up a new position, attempts " + reQueueData.attempts);
                 PaperLib.getChunkAtAsync(loc)
                         .thenAccept(v -> AsyncHandler.syncAtLocation(loc, () -> {
