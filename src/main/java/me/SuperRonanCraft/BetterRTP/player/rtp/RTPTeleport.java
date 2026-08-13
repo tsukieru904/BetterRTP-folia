@@ -57,7 +57,7 @@ public class RTPTeleport {
                 AsyncHandler.syncAtEntity(p, () -> {
                     try {
                         if (throwable != null || !Boolean.TRUE.equals(success)) {
-                            getPl().failedTeleport(p, sendi);
+                            failedTeleport(p, sendi);
                             return;
                         }
 

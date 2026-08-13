@@ -55,7 +55,8 @@ public class RTPEffect_Sounds {
                 packet.sendPacket(p);
             } catch (NoClassDefFoundError | Exception e) {
                 BetterRTP.getInstance().getLogger().severe("ProtocolLib Sounds is enabled in the effects.yml file, but no ProtocolLib plugin was found!");
-                p.playSound(p.getLocation(), getSound(sound), 1F, 1F);
+                if (!playConfiguredSound(p, sound))
+                    BetterRTP.getInstance().getLogger().warning("The sound '" + sound + "' is unavailable on this server.");
             }
         } else {
             if (!playConfiguredSound(p, sound))
